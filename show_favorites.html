@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ username }}'s Favorites</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa; /* Light gray background */
+            margin: 0;
+            padding: 20px;
+            color: #343a40; /* Darker text for readability */
+        }
+        .top-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .top-buttons a {
+            margin-left: 10px;
+            color: #5cb85c; /* Light green color for the logout link */
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background-color: #ffffff; /* White background for the container */
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+            position: relative; /* Relative positioning for child elements */
+        }
+        h1 {
+            text-align: center;
+            color: #5cb85c; /* Lighter green color for the heading */
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        .divider {
+            height: 2px;
+            background-color: #e0e0e0; /* Light gray color for the divider */
+            margin: 20px 0; /* Margin for spacing */
+        }
+        .favorite-box {
+            background-color: #f1f3f5; /* Light gray background for the favorite box */
+            border-radius: 6px;
+            padding: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15); /* Slightly darker shadow */
+            max-height: 300px; /* Set max height for scrolling */
+            overflow-y: auto; /* Enable vertical scrolling */
+        }
+        .section-title {
+            font-weight: 600; /* Semi-bold font for section titles */
+            color: #495057; /* Dark gray for titles */
+            margin-bottom: 5px;
+        }
+        .content-item {
+            margin-bottom: 10px;
+            color: #212529; /* Dark text for content */
+        }
+        .salary {
+            font-size: 1.2em; /* Larger font size for salary */
+            color: #5cb85c; /* Light green color for salary */
+            font-weight: 700; /* Bold font for emphasis */
+        }
+        .remove-btn {
+            background-color: #5cb85c; /* Light green color for the button */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            cursor: pointer;
+            float: right;
+        }
+        .remove-btn:hover {
+            background-color: #4cae4c; /* Darker green for hover effect */
+        }
+        .explore-btn {
+            background-color: #5cb85c; /* Light green color for explore button */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 15px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto; /* Center the button */
+            text-align: center;
+            font-size: 1em;
+        }
+        .explore-btn:hover {
+            background-color: #4cae4c; /* Darker green for hover effect */
+        }
+        p {
+            text-align: center;
+            color: #6c757d; /* Light gray for the message */
+            font-style: italic; /* Italicize for a softer touch */
+        }
+    </style>
+</head>
+<body>
+    <div class="top-buttons">
+        <a href="{{ url_for('logout') }}">Logout</a> <!-- Logout link -->
+    </div>
+
+    <div class="container">
+        <h1>Course Recommendation System</h1> <!-- Updated heading -->
+
+        <div class="divider"></div> <!-- Divider line -->
+        
+        {% if favorites %}
+            <div class="favorite-box">
+                {% for favorite in favorites %}
+                    <div class="favorite-item">
+                        <button class="remove-btn" onclick="removeFavorite({{ favorite.id }})">Remove from Favorites</button>
+                        <div class="section-title">Role:</div>
+                        <div class="content-item">{{ favorite.role }}</div>
+
+                        <div class="section-title">Courses:</div>
+                        <div class="content-item">
+                            {% if favorite.courses %}
+                                <ul>
+                                    {% for course, links in favorite.courses.items() %}
+                                        <li>{{ course }}</li>  <!-- Display only course names -->
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                No courses available.
+                            {% endif %}
+                        </div>
+
+                        <div class="section-title">Skills:</div>
+                        <div class="content-item">
+                            {% if favorite.skills %}
+                                <ul>
+                                    {% for skill, links in favorite.skills.items() %}
+                                        <li>{{ skill }}</li>  <!-- Display only skill names -->
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                No skills available.
+                            {% endif %}
+                        </div>
+
+                        <div class="section-title">Predicted Salary:</div>
+                        <div class="salary">₹{{ favorite.salary }}</div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p>No favorites added yet.</p>
+        {% endif %}
+        
+        <button class="explore-btn" onclick="window.location.href='{{ url_for('index') }}'">Explore More Roles</button> <!-- Explore button -->
+    </div>
+
+    <script>
+        function removeFavorite(favoriteId) {
+            if (confirm("Are you sure you want to remove this favorite?")) {
+                fetch(`/remove_favorite/${favoriteId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload(); // Reload the page to reflect changes
+                    } else {
+                        alert('Error removing favorite.');
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html>

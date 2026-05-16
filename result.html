@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Recommendations & Salary Prediction</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        .top-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .top-buttons a {
+            margin-left: 10px;
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 80px auto;
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+        .section-title {
+            font-weight: bold;
+            color: #333;
+            margin-top: 20px;
+            font-size: 22px;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 10px;
+        }
+        .content-item {
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        }
+        .content-item a {
+            color: #4CAF50;
+            text-decoration: none;
+            margin-right: 10px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+        .content-item a:hover {
+            color: #45a049;
+            text-decoration: underline;
+        }
+        .predicted-salary {
+            color: #4CAF50;
+            font-weight: bold;
+            font-size: 20px;
+            margin: 25px 0;
+            padding: 15px;
+            background-color: #e9ffe9;
+            border-radius: 8px;
+            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+        }
+        .footer-message {
+            text-align: center;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-top: 30px;
+            font-size: 18px;
+        }
+        button {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .buttons-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+    </style>
+<script>
+    function toggleFavorites() {
+        const role = "{{ role }}";
+        const courses = {{ course_links|tojson }}; // You can keep this if you still want to send courses info
+        const skills = {{ skill_links|tojson }}; // Same for skills
+        const salary = "{{ predicted_salary }}";
+
+        // Prepare form data
+        const formData = new URLSearchParams();
+        formData.append('role', role);
+        formData.append('courses', JSON.stringify(courses)); // Optional, keep only if needed
+        formData.append('skills', JSON.stringify(skills)); // Optional, keep only if needed
+        formData.append('salary', salary);
+
+        fetch('/add_to_favorite', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: formData.toString()
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.text(); // Change to text if your server returns plain text or HTML
+        })
+        .then(data => {
+            const button = document.getElementById("favoriteButton");
+            // Parse the response if it contains JSON
+            const result = JSON.parse(data);
+            button.innerText = result.action === "added" ? "Remove from Favorites" : "Add to Favorites";
+            alert(result.message);
+        })
+        .catch(error => {
+            console.error('An error occurred:', error);
+            alert('An error occurred: ' + error.message);
+        });
+    }
+</script>
+</head>
+<body>
+
+    <div class="top-buttons">
+        <a href="/show_favorites">Show Favorites</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div class="container">
+        <h1>Course Recommendations & Salary Prediction</h1>
+
+        <div class="section-title">Recommended Courses:</div>
+        {% for course, platforms in course_links.items() %}
+            <div class="content-item">
+                <strong>{{ course }}:</strong>
+                {% for platform, link in platforms.items() %}
+                    <a href="{{ link }}" target="_blank">{{ platform }}</a>
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="section-title">Skills:</div>
+        {% for skill, skill_links in skill_links.items() %}
+            <div class="content-item">
+                <strong>{{ skill }}:</strong>
+                {% for platform, url in skill_links.items() %}
+                    <a href="{{ url }}" target="_blank">{{ platform }}</a>{% if not loop.last %}, {% endif %}
+                {% endfor %}
+            </div>
+        {% endfor %}
+
+        <div class="predicted-salary">
+            Predicted Salary for 2025 ({{ experience }}): ₹{{ predicted_salary }}
+        </div>
+
+        <div class="footer-message">
+            We hope these predictions assist you in making informed decisions for your future career!
+        </div>
+
+        <div class="buttons-container">
+            <button id="favoriteButton" onclick="toggleFavorites()">Add to Favorites</button>
+            <button onclick="window.location.href='/index'">Explore more</button>
+        </div>
+    </div>
+</body>
+</html>

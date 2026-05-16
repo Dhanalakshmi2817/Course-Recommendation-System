@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Recommendation System</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #4CAF50;
+            text-align: center;
+            margin-top: 20px;
+        }
+        .top-buttons {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+        }
+        .top-buttons a {
+            margin-left: 10px;
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .container {
+            width: 50%;  /* Width of the container */
+            margin: auto;
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            margin-top: 30px;
+            padding-bottom: 30px; /* Extra padding at the bottom for a cleaner look */
+            position: relative; /* Added to manage absolute positioning */
+        }
+        label {
+            font-weight: bold;
+            color: #333;
+            margin-top: 10px;
+            display: block;
+        }
+        input[type="text"], select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+            height: 40px;
+        }
+        #role {
+            border: 1px solid #ddd;
+            background-color: white;
+            width: 97%;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .output-section {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+        }
+        .output-section h3 {
+            color: #333;
+            margin-bottom: 10px; /* Spacing below heading */
+        }
+        .course-item, .skill-item {
+            margin: 8px 0;
+        }
+        .footer-message {
+            text-align: center;
+            color: #4CAF50;
+            font-weight: bold;
+            margin-top: 30px;
+            font-size: 14px; /* Slightly smaller font size for footer message */
+        }
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%; /* Adjust container width on smaller screens */
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Course Recommendation System</h1>
+    
+    <div class="top-buttons">
+        <a href="/show_favorites">Show Favorites</a>
+        <a href="/logout">Logout</a>
+    </div>
+
+    <div class="container">
+        <form method="POST" action="/recommend">
+            <label for="role">Type or Select the Role:</label>
+            <input list="roles" id="role" name="role" placeholder="Type a role" required>
+            <datalist id="roles">
+                {% for role in roles %}
+                    <option value="{{ role }}">
+                {% endfor %}
+            </datalist>
+
+            <label for="experience">Select Experience Level:</label>
+            <select id="experience" name="experience">
+                <option value="Entry Level (0-2 years)">Entry Level (0-2 years)</option>
+                <option value="Mid Level (2-5 years)">Mid Level (2-5 years)</option>
+                <option value="Senior Level (5+ years)">Senior Level (5+ years)</option>
+            </select>
+            <button type="submit">Get Courses & Skills</button>
+        </form>
+
+        {% if courses or skills or predicted_salary %}
+        <div class="output-section">
+            <h3>Recommended Courses:</h3>
+            {% for course, link in courses.items() %}
+                <div class="course-item">
+                    <a href="{{ link }}" target="_blank">{{ course }}</a>
+                </div>
+            {% endfor %}
+
+            <h3>Skills:</h3>
+            {% for skill, skill_links in skills.items() %}
+                <div class="skill-item">
+                    {{ skill }}: 
+                    {% for platform, url in skill_links.items() %}
+                        <a href="{{ url }}" target="_blank">{{ platform }}</a>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                </div>
+            {% endfor %}
+
+            <h3>Predicted Salary for 2025:</h3>
+            <p>{{ experience }}: ₹{{ predicted_salary }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Admin Links -->
+        {% if session.get('admin_logged_in') %}  <!-- Check if admin is logged in -->
+        <div>
+            <a href="/users">View Registered Users</a>
+        </div>
+        {% endif %}
+
+        <div class="footer-message">
+            We hope these predictions assist you in making informed decisions for your future career!
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Recommendation System</title>
+
+    <!-- Include Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Add some custom styling -->
+    <style>
+        body {
+            background-color: #f5f5f5;
+        }
+        .hero-section {
+            background-color: #4CAF50;
+            color: white;
+            padding: 100px 0;
+            text-align: center;
+        }
+        .hero-section h1 {
+            font-size: 4rem;
+            font-weight: 700;
+        }
+        .hero-section p {
+            font-size: 1.5rem;
+            margin-bottom: 30px;
+	   
+        }
+        .btn-custom {
+            background-color: white;
+            color: #4CAF50;
+            border: 2px solid white;
+            font-size: 1.25rem;
+            padding: 10px 30px;
+            transition: 0.3s;
+        }
+        .btn-custom:hover {
+            background-color: #4CAF50;
+            color: white;
+            border: 2px solid white;
+        }
+        footer {
+            margin-top: 50px;
+            padding: 20px;
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <h1>Welcome to the Course Recommendation System</h1>
+        <p>Find the best courses and career opportunities based on your role and experience.</p>
+       <a href="{{ url_for('login') }}" class="btn btn-custom">Get Started</a>
+
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Course Recommendation System. All rights reserved.</p>
+    </footer>
+
+    <!-- Include Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
